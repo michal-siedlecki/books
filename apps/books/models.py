@@ -1,4 +1,5 @@
 import datetime
+
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from rest_framework import serializers
@@ -30,5 +31,11 @@ class BookSerializer(serializers.ModelSerializer):
                 data['average_rating'] = int(data['average_rating'])
             except TypeError:
                 data['average_rating'] = 0
+
+        if not isinstance(data['ratings_count'], int):
+            try:
+                data['ratings_count'] = int(data['ratings_count'])
+            except TypeError:
+                data['ratings_count'] = 0
 
         return super().to_internal_value(data)

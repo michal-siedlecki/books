@@ -4,4 +4,4 @@ from .models import Book
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    list_display = ('title', 'thumbnail')
+    list_display = [field.name for field in Book._meta.get_fields()]

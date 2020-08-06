@@ -1,6 +1,6 @@
 import json
-from django.test import TestCase
-from apps.books.models import BookSerializer
+from django.test import TestCase, Client
+from apps.books.models import Book, BookSerializer
 
 
 class SerializerTests(TestCase):
@@ -8,6 +8,7 @@ class SerializerTests(TestCase):
         self.JSON_FILE = 'volumes.json'
 
     def test_load_data(self):
+        books_count_initial = len(Book.objects.all())
         with open(self.JSON_FILE) as datafile:
             objects = json.load(datafile)
             books = objects.get('items')
@@ -24,6 +25,25 @@ class SerializerTests(TestCase):
                 )
                 book_serializer = BookSerializer(data=book)
                 book_serializer.is_valid(raise_exception=True)
-                print("-------------")
-                print(book_serializer.validated_data)
-                print("-------------")
+                book_new = Book(**book_serializer.validated_data)
+                book_new.save()
+        objects_count = len(books)
+        books_count = len(Book.objects.all()) - books_count_initial
+        self.assertEqual(objects_count, books_count)
+
+class APIViewsTests(TestCase):
+    def setUp(self) -> None:
+        self.client = Client()
+
+    def test_list_view_loads(self):
+        response = self.client.get('/books/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_detail_view_existing_book_loads(self):
+        book_id = Book.objects.first().id
+
+        response = self.client.get('/books/%s/' % (str(book_id)))
+        self.assertEqual(response.status_code, 200)
+
+
+
