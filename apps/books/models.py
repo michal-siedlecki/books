@@ -22,7 +22,7 @@ class BookSerializer(serializers.ModelSerializer):
 
     def to_internal_value(self, data):
         try:
-            data['published_date'] = datetime.datetime.strptime(data['published_date'], '%Y-%m-%d').year
+            data['published_date'] = datetime.datetime.strptime(str(data['published_date']), '%Y-%m-%d').year
         except ValueError:
             data['published_date'] = int(data['published_date'])
 

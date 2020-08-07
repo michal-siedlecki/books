@@ -45,5 +45,12 @@ class APIViewsTests(TestCase):
         response = self.client.get('/books/%s/' % (str(book_id)))
         self.assertEqual(response.status_code, 200)
 
+    def test_query_view_existing_book_loads(self):
+        book_id = Book.objects.first().id
+
+        response = self.client.get('/books/%s/' % (str(book_id)))
+
+        self.request.query_params.get('username', None)
+
 
 
