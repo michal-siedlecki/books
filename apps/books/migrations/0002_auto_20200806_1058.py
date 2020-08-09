@@ -4,7 +4,7 @@ from django.db import migrations
 from apps.books.models import BookSerializer
 
 
-JSON_FILE = 'volumes.json'
+JSON_FILE = 'initial_data/volumes.json'
 
 def load_data(apps, schema_editor):
     Book = apps.get_model('books', 'Book')
