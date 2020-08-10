@@ -14,6 +14,9 @@ class Book(models.Model):
     ratings_count = models.IntegerField(default=0, null=True, blank=True)
     thumbnail = models.CharField(max_length=2083, blank=True, null=True)
 
+    class Meta:
+        ordering = ['title']
+
 
 class BookSerializer(serializers.ModelSerializer):
     class Meta:

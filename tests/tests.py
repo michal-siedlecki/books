@@ -1,11 +1,14 @@
 import json
-from django.test import TestCase, Client
+from django.test import TestCase
 from apps.books.models import Book, BookSerializer
+from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APIClient
 
 
 class SerializerTests(TestCase):
     def setUp(self) -> None:
-        self.JSON_FILE = 'volumes.json'
+        self.JSON_FILE = 'initial_data/volumes.json'
 
     def test_load_data(self):
         books_count_initial = len(Book.objects.all())
@@ -31,26 +34,46 @@ class SerializerTests(TestCase):
         books_count = len(Book.objects.all()) - books_count_initial
         self.assertEqual(objects_count, books_count)
 
+
 class APIViewsTests(TestCase):
     def setUp(self) -> None:
-        self.client = Client()
+        self.client = APIClient()
 
-    def test_list_view_loads(self):
-        response = self.client.get('/books/')
+    def test_list_view_loads_all_books(self):
+        books_count_initial = len(Book.objects.all())
+        response = self.client.get('/books')
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data.get('count'), books_count_initial)
 
-    def test_detail_view_existing_book_loads(self):
-        book_id = Book.objects.first().id
-
-        response = self.client.get('/books/%s/' % (str(book_id)))
+    def test_detail_view_loads_exact_book(self):
+        book_id = 1
+        response = self.client.get('/books/%s' % book_id)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data.get('id'), book_id)
 
-    def test_query_view_existing_book_loads(self):
-        book_id = Book.objects.first().id
+    def test_published_date_filter(self):
+        published_date = 2012
+        response = self.client.get('/books?published_date=2012')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data.get('count'), len(Book.objects.filter(published_date=published_date)))
 
-        response = self.client.get('/books/%s/' % (str(book_id)))
-
-        self.request.query_params.get('username', None)
-
-
+    def test_create_book(self):
+        """
+        Ensure we can create a new book object.
+        """
+        books_count_initial = len(Book.objects.all())
+        url = reverse('books')
+        data = {
+            'title': 'My new book',
+            'authors': ['Test user'],
+            'published_date': 2020,
+            'categories': ['Science fiction'],
+            'average_rating': 0,
+            'ratings_count': 0,
+            'thumbnail': 'www.example.com/book.jpg'
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Book.objects.count(), books_count_initial+1)
+        self.assertEqual(Book.objects.get(title=data.get('title')).title, data.get('title'))
 
