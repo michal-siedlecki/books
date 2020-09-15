@@ -1,6 +1,6 @@
 Querybook - Books REST API
 ==============================
-
+![GitHub](https://img.shields.io/github/license/michal-siedlecki/books?style=plastic)
 
 https://querybook.herokuapp.com/
 
