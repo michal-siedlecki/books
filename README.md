@@ -1,5 +1,5 @@
-# Querybook - Books REST API
 
+# Querybook - Books REST API
 
 ![GitHub repo size](https://img.shields.io/github/license/michal-siedlecki/books)
 ![GitHub repo size](https://img.shields.io/github/repo-size/michal-siedlecki/books)

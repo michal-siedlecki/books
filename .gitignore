@@ -1,3 +1,6 @@
+### Deployment version ###
+books-app-deploy/.
+books-app-deploy/
 
 ### Django ###
 *.log
